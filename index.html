@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="THE LAST AUTOGRAPH - A psychological horror anomaly inspection game."
+    >
+
+    <meta name="theme-color" content="#111111">
+
+    <title>THE LAST AUTOGRAPH</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Character rendering -->
+    <script src="js/characters.js" defer></script>
+
+    <!-- Paper rendering -->
+    <script src="js/papers.js" defer></script>
+
+    <!-- Visual effects -->
+    <script src="js/effects.js" defer></script>
+
+    <!-- Anomaly information -->
+    <script src="js/anomalies.js" defer></script>
+
+    <!-- Local game storage -->
+    <script src="js/storage.js" defer></script>
+
+    <!-- Game rules -->
+    <script src="js/game.js" defer></script>
+
+    <!-- Application initialization -->
+    <script src="js/main.js" defer></script>
+</head>
+
+<body>
+    <main id="game">
+
+        <!-- =========================
+             AUDIO
+        ========================== -->
+
+        <audio
+            id="backgroundMusic"
+            src="audio/darkne-horror-atmosphere-615391.mp3"
+            loop
+            preload="auto"
+        ></audio>
+
+        <audio
+            id="wrongSound"
+            src="audio/floraphonic-buzzer-18-203421.mp3"
+            preload="auto"
+        ></audio>
+
+        <audio
+            id="correctSound"
+            src="audio/koiroylers-correct-356013.mp3"
+            preload="auto"
+        ></audio>
+
+
+        <!-- =========================
+             GAME HEADER
+        ========================== -->
+
+        <header class="game-header">
+
+            <div class="game-brand">
+                <span class="brand-label">
+                    PSYCHOLOGICAL HORROR
+                </span>
+
+                <h1>THE LAST AUTOGRAPH</h1>
+            </div>
+
+            <div class="game-stats">
+
+                <div class="stat">
+                    <span class="stat-label">SCORE</span>
+                    <span id="score" class="stat-value">000</span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">BEST</span>
+                    <span id="highScore" class="stat-value">000</span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-label">LIVES</span>
+
+                    <div
+                        id="lives"
+                        class="lives"
+                        aria-label="3 lives"
+                    >
+                        <span class="life">♥</span>
+                        <span class="life">♥</span>
+                        <span class="life">♥</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             TOOLBAR
+        ========================== -->
+
+        <nav class="game-toolbar" aria-label="Game tools">
+
+            <button
+                id="openAnomalyIndexButton"
+                class="tool-button"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="anomalyIndex"
+            >
+                ☷ ANOMALY INDEX
+            </button>
+
+            <span class="toolbar-note">
+                STUDY THE EVIDENCE
+            </span>
+
+        </nav>
+
+
+        <!-- =========================
+             GAME SCENE
+        ========================== -->
+
+        <section
+            id="gameScene"
+            class="game-scene"
+            aria-label="Autograph inspection area"
+        >
+
+            <div class="scene-background" aria-hidden="true">
+                <div class="background-light"></div>
+                <div class="background-shadow"></div>
+            </div>
+
+
+            <!-- =========================
+                 CURRENT VISITOR
+            ========================== -->
+
+            <div id="fanArea" class="fan-area">
+
+                <div class="fan-nameplate">
+                    <span class="small-label">
+                        CURRENT VISITOR
+                    </span>
+
+                    <span id="fanNumber">
+                        VISITOR #001
+                    </span>
+                </div>
+
+                <canvas
+                    id="characterCanvas"
+                    width="500"
+                    height="560"
+                    aria-label="Current visitor character"
+                    role="img"
+                ></canvas>
+
+                <p id="fanMessage" class="fan-message">
+                    Could you sign this for me?
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 SIGNING DESK
+            ========================== -->
+
+            <div class="desk">
+
+                <div class="desk-label">
+                    <span>YOUR SIGNING DESK</span>
+                    <span>INSPECT BEFORE SIGNING</span>
+                </div>
+
+                <div class="desk-items">
+
+                    <!-- Paper inspection area -->
+
+                    <div class="paper-inspection-area">
+
+                        <button
+                            id="inspectPaper"
+                            class="paper-button"
+                            type="button"
+                            aria-label="Inspect the autograph paper"
+                            aria-describedby="inspectHint"
+                        >
+
+                            <canvas
+                                id="paperCanvas"
+                                width="360"
+                                height="250"
+                                aria-label="Autograph paper presented by the visitor"
+                                role="img"
+                            ></canvas>
+
+                            <span
+                                id="inspectHint"
+                                class="inspect-hint"
+                            >
+                                CLICK TO INSPECT
+                            </span>
+
+                        </button>
+
+
+                        <!-- Paper zoom controls -->
+
+                        <div
+                            class="paper-zoom-controls"
+                            aria-label="Paper zoom controls"
+                        >
+
+                            <button
+                                id="zoomOutPaper"
+                                type="button"
+                                aria-label="Zoom out paper"
+                                title="Zoom out"
+                            >
+                                −
+                            </button>
+
+                            <span
+                                id="paperZoomValue"
+                                aria-live="polite"
+                            >
+                                100%
+                            </span>
+
+                            <button
+                                id="zoomInPaper"
+                                type="button"
+                                aria-label="Zoom in paper"
+                                title="Zoom in"
+                            >
+                                +
+                            </button>
+
+                            <button
+                                id="resetPaperZoom"
+                                type="button"
+                                aria-label="Reset paper zoom"
+                                title="Reset zoom"
+                            >
+                                RESET
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Signing pen -->
+
+                    <div class="pen-area" aria-label="Signing pen">
+
+                        <div class="pen">
+                            <span class="pen-tip"></span>
+                        </div>
+
+                        <span class="pen-label">
+                            SIGNING PEN
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 DECISION CONTROLS
+            ========================== -->
+
+            <div class="decision-panel">
+
+                <p class="decision-instruction">
+                    SHOULD YOU SIGN THIS AUTOGRAPH?
+                </p>
+
+                <div class="decision-buttons">
+
+                    <button
+                        id="rejectButton"
+                        class="decision-button reject-button"
+                        type="button"
+                    >
+                        <span class="button-symbol" aria-hidden="true">
+                            ✕
+                        </span>
+
+                        <span>REJECT</span>
+
+                        <span class="button-description">
+                            Refuse the autograph
+                        </span>
+                    </button>
+
+
+                    <button
+                        id="signButton"
+                        class="decision-button sign-button"
+                        type="button"
+                    >
+                        <span class="button-symbol" aria-hidden="true">
+                            ✎
+                        </span>
+
+                        <span>SIGN</span>
+
+                        <span class="button-description">
+                            Give the autograph
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 DECISION FEEDBACK
+            ========================== -->
+
+            <div
+                id="feedback"
+                class="feedback hidden"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+
+                <span id="feedbackTitle"></span>
+
+                <p id="feedbackMessage"></p>
+
+                <button id="nextButton" type="button">
+                    NEXT VISITOR →
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 GAME OVER
+            ========================== -->
+
+            <div
+                id="gameOverScreen"
+                class="game-over hidden"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="gameOverTitle"
+            >
+
+                <div class="game-over-content">
+
+                    <p class="small-label">
+                        YOUR SESSION HAS ENDED
+                    </p>
+
+                    <h2 id="gameOverTitle">
+                        THE LAST AUTOGRAPH
+                    </h2>
+
+                    <p class="game-over-subtitle">
+                        You should have looked more carefully.
+                    </p>
+
+                    <div class="final-score">
+                        <span>FINAL SCORE</span>
+                        <strong id="finalScore">000</strong>
+                    </div>
+
+                    <p
+                        id="newRecordMessage"
+                        class="record-message"
+                    ></p>
+
+                    <button id="restartButton" type="button">
+                        TRY AGAIN
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             ANOMALY INDEX
+        ========================== -->
+
+        <section
+            id="anomalyIndex"
+            class="anomaly-index hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="anomalyIndexTitle"
+            aria-describedby="anomalyIndexDescription"
+        >
+
+            <div class="anomaly-index-panel">
+
+                <header class="anomaly-index-header">
+
+                    <div>
+                        <span class="small-label">
+                            FIELD REFERENCE DOCUMENT
+                        </span>
+
+                        <h2 id="anomalyIndexTitle">
+                            ANOMALY INDEX
+                        </h2>
+                    </div>
+
+                    <button
+                        id="closeAnomalyIndexButton"
+                        class="close-index-button"
+                        type="button"
+                        aria-label="Close anomaly index"
+                    >
+                        ✕
+                    </button>
+
+                </header>
+
+
+                <p
+                    id="anomalyIndexDescription"
+                    class="anomaly-index-description"
+                >
+                    Not every unusual detail is proof.
+                    Observe carefully before making a decision.
+                </p>
+
+
+                <!-- Visitor anomaly entries are rendered here -->
+<br>
+                <section class="index-section">
+
+                    <h3>01 / VISITOR ANOMALIES</h3>
+<br>
+                    <div
+                        id="visitorAnomalyIndex"
+                        class="anomaly-index-list"
+                    >
+                        <p class="index-loading">
+                            Visitor records will appear here.
+                        </p>
+                    </div>
+
+                </section>
+
+
+                <!-- Paper anomaly entries are rendered here -->
+<br>
+                <section class="index-section">
+
+                    <h3>02 / PAPER ANOMALIES</h3>
+                <br>
+                    <div
+                        id="paperAnomalyIndex"
+                        class="anomaly-index-list"
+                    >
+                        <p class="index-loading">
+                            Paper records will appear here.
+                        </p>
+                    </div>
+
+                </section>
+
+                <footer class="anomaly-index-footer">
+
+                    <p>
+                        A single mistake may cost you a life.
+                    </p>
+
+                    <button
+                        id="closeAnomalyIndexFooterButton"
+                        type="button"
+                    >
+                        RETURN TO INSPECTION
+                    </button>
+
+                </footer>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             GAME FOOTER
+        ========================== -->
+
+        <footer class="game-footer">
+
+            <span>NOT EVERY FAN IS HUMAN.</span>
+
+            <span>OBSERVE. DECIDE. SURVIVE.</span>
+
+        </footer>
+
+    </main>
+</body>
+</html>
